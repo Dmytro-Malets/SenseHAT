@@ -1,0 +1,11 @@
+venv/
+.env
+environment_data.db
+*.pyc
+__pycache__/
+*.log
+*.DS_Store
+.idea/
+*.bak
+*.swp
+*.swo
