@@ -52,8 +52,8 @@ LEVEL_CONFIG = {
         )
     },
     5: {
-        'target_length': 15,
-        'initial_sleep_time': 0.6,
+        'target_length': 12,
+        'initial_sleep_time': 0.65,
         'start_pos': (5, 4),
         'direction': "right",
         'walls_config': lambda: (
@@ -104,22 +104,30 @@ class SnakeGame:
         }
 
         dx, dy = moves[self.direction]
-        x = (x + dx) % 8
-        y = (y + dy) % 8
+        new_x = (x + dx) % 8
+        new_y = (y + dy) % 8
 
-        if (x, y) in self.snake or (x, y) in self.walls:
+        if (new_x, new_y) in self.walls:
             return False
 
-        self.snake.insert(0, (x, y))
+        tail = None
+        if len(self.snake) > self.snake_length:
+            tail = self.snake.pop()
 
-        if (x, y) == self.food:
+        if (new_x, new_y) in self.snake:
+            if tail:
+                self.snake.append(tail)
+            return False
+
+        self.snake.insert(0, (new_x, new_y))
+
+        if (new_x, new_y) == self.food:
             self.snake_length += 1
             if self.sleep_time > 0.3:
                 self.sleep_time *= 0.97
             self.generate_food()
-
-        if len(self.snake) > self.snake_length:
-            self.snake.pop()
+            if tail:
+                self.snake.append(tail)
 
         return True
 
@@ -155,7 +163,7 @@ class SnakeGame:
             if self.move():
                 self.draw()
             else:
-                sense.show_message("Game Over!", text_colour=RED)
+                sense.show_message("Game Over!", text_colour=RED, scroll_speed=0.07)
                 return False
             sleep(self.sleep_time)
 
@@ -165,12 +173,12 @@ class SnakeGame:
     def run(self):
         while True:
             if self.level <= 5:
-                sense.show_message(str(self.level), text_colour=GREEN)
+                sense.show_message(str(self.level), text_colour=GREEN, scroll_speed=0.07)
                 self.reset_level(self.level)
                 if not self.play_level(self.level):
                     break
             else:
-                sense.show_message("You Win!", text_colour=GREEN)
+                sense.show_message("You Win!", text_colour=GREEN, scroll_speed=0.07)
                 break
         sense.clear()
 
